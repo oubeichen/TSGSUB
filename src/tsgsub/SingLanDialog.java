@@ -23,6 +23,7 @@ public class SingLanDialog extends javax.swing.JDialog {
     public SingLanDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        //this.setLocationRelativeTo(null); 
         Reslist.setModel(new DefaultListModel());
         init();
 
@@ -61,8 +62,11 @@ public class SingLanDialog extends javax.swing.JDialog {
         isFindWrongStyle = new javax.swing.JCheckBox();
         isFindMultiLine = new javax.swing.JCheckBox();
         isFindOver = new javax.swing.JCheckBox();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("单语查错");
 
         jLabel1.setText("请选择中文样式的名称：");
 
@@ -102,6 +106,10 @@ public class SingLanDialog extends javax.swing.JDialog {
         isFindOver.setSelected(true);
         isFindOver.setText("查找结束早于等于开始");
 
+        jLabel4.setText("请在AE中修改后重新打开，多次检查无错误后才可确保。还在不断完善，请见谅。");
+
+        jLabel2.setText("双击下面的错误可在主窗口定位对应行的字幕。");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -112,13 +120,13 @@ public class SingLanDialog extends javax.swing.JDialog {
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(isFindTimeCover)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                         .addComponent(Find))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(130, 130, 130)
                                 .addComponent(StyleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(isFindLength)
@@ -129,19 +137,24 @@ public class SingLanDialog extends javax.swing.JDialog {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(isFindWrongStyle)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(isFindMultiLine)))
+                                .addComponent(isFindMultiLine))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel2))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(StyleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(isFindWrongStyle)
@@ -201,7 +214,7 @@ public class SingLanDialog extends javax.swing.JDialog {
             }
             if (isFindMultiLine.isSelected())//判断多行
             {
-                if (temp.contains("\\n")) {
+                if (temp.contains("\\n") || temp.contains("\\N")) {
                     dlm.addElement((int) (i + 1) + ": 这一行字幕包含\"\\n\"，将会显示为多行");
                 }
             }
@@ -314,6 +327,8 @@ public class SingLanDialog extends javax.swing.JDialog {
     private javax.swing.JCheckBox isFindTimeCover;
     private javax.swing.JCheckBox isFindWrongStyle;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
     private int totalstyles;

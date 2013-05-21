@@ -14,11 +14,11 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -53,6 +54,7 @@ public class Main extends javax.swing.JFrame {
      */
     public Main() {
         initComponents();
+        this.setLocationRelativeTo(null); 
         SubTable.setEnabled(false);
         SubTable.setDropTarget(new DropTarget() {
             @Override
@@ -62,15 +64,15 @@ public class Main extends javax.swing.JFrame {
                 Transferable t = dtde.getTransferable();
                 List fileList;
                 try {
-                    fileList = (List)t.getTransferData(DataFlavor.javaFileListFlavor);
-                    file = (File)fileList.get(0);
+                    fileList = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+                    file = (File) fileList.get(0);
                     openFile();
                 } catch (UnsupportedFlavorException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (IOException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
+
             }
         });
         jScrollPane1.setDropTarget(new DropTarget() {
@@ -81,8 +83,8 @@ public class Main extends javax.swing.JFrame {
                 Transferable t = dtde.getTransferable();
                 List fileList;
                 try {
-                    fileList = (List)t.getTransferData(DataFlavor.javaFileListFlavor);
-                    file = (File)fileList.get(0);
+                    fileList = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+                    file = (File) fileList.get(0);
                     openFile();
                 } catch (UnsupportedFlavorException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,6 +112,7 @@ public class Main extends javax.swing.JFrame {
         MultiLanButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        showFontsButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         FileOpenMenu = new javax.swing.JMenuItem();
@@ -118,9 +121,10 @@ public class Main extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         SingLan = new javax.swing.JMenuItem();
         MultiLan = new javax.swing.JMenuItem();
+        showFonts = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("三角字幕处理工具0.1");
+        setTitle("三角字幕处理工具0.2");
 
         SubTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -149,9 +153,16 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("注意打开的字幕文件必须是UTF-8格式编码的，打开失败的使用记事本->另存为，下面选择UTF-8");
+        jLabel1.setText("已经能识别几种编码，打开还是失败的使用记事本->另存为，下面选择UTF-8");
 
         jLabel2.setText("拖拽文件到下面的表格中可直接打开，BUG比较多，有问题请反馈给oubeichen，谢谢啦!");
+
+        showFontsButton.setText("查看字体");
+        showFontsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showFontsButtonActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("文件");
 
@@ -197,6 +208,14 @@ public class Main extends javax.swing.JFrame {
         });
         jMenu2.add(MultiLan);
 
+        showFonts.setText("查看字体");
+        showFonts.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showFontsActionPerformed(evt);
+            }
+        });
+        jMenu2.add(showFonts);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -212,7 +231,8 @@ public class Main extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(SingleLanButton)
-                            .addComponent(MultiLanButton, javax.swing.GroupLayout.Alignment.TRAILING)))
+                            .addComponent(MultiLanButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(showFontsButton)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -226,17 +246,19 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(SingleLanButton)
-                        .addGap(82, 82, 82)
-                        .addComponent(MultiLanButton)
-                        .addContainerGap(123, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(SingleLanButton)
+                        .addGap(67, 67, 67)
+                        .addComponent(MultiLanButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                        .addComponent(showFontsButton)
+                        .addGap(46, 46, 46))))
         );
 
         pack();
@@ -276,40 +298,95 @@ public class Main extends javax.swing.JFrame {
 
     private void SingleLanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SingleLanButtonActionPerformed
         // TODO add your handling code here:
-        if(file == null)
-        {
+        if (file == null) {
             javax.swing.JOptionPane.showMessageDialog(this, "还没有打开一个文件！", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        SingLanDialog sldlg = new SingLanDialog(this,false);
+        if (sldlg != null) {
+            sldlg.dispose();
+        }
+        sldlg = new SingLanDialog(this, false);
         sldlg.setVisible(true);
     }//GEN-LAST:event_SingleLanButtonActionPerformed
 
     private void MultiLanButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MultiLanButtonActionPerformed
         // TODO add your handling code here:
-         if(file == null)
-        {
+        if (file == null) {
             javax.swing.JOptionPane.showMessageDialog(this, "还没有打开一个文件！", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        MultiLanDialog mudlg = new MultiLanDialog(this,false);
+        if (mudlg != null) {
+            mudlg.dispose();
+        }
+        mudlg = new MultiLanDialog(this, false);
         mudlg.setVisible(true);
     }//GEN-LAST:event_MultiLanButtonActionPerformed
-    private void openFile(){
+
+    private void showFontsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showFontsButtonActionPerformed
+        // TODO add your handling code here:
+        if (file == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "还没有打开一个文件！", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+       if (sfdlg != null) {
+            sfdlg.dispose();
+        }
+        sfdlg = new ShowFontsDialog(this, false);
+        sfdlg.setVisible(true);
+    }//GEN-LAST:event_showFontsButtonActionPerformed
+
+    private void showFontsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showFontsActionPerformed
+        // TODO add your handling code here:
+        showFontsButtonActionPerformed(evt);
+    }//GEN-LAST:event_showFontsActionPerformed
+    private void openFile() {
+
         BufferedReader reader = null;
         try {
-            FileInputStream fis=new FileInputStream(file);
-            // 按照 UTF-8 编码方式将字节流转化为字符流
+            /*用于判断编码的代码开始*/
+            FileInputStream fis = new FileInputStream(file);
+            BufferedInputStream bin = new BufferedInputStream(fis);
+            int p = (bin.read() << 8) + bin.read();
+            String code;
+            switch (p) {
+                case 0xefbb:
+                    code = "UTF-8";
+                    break;
+                case 0xfffe:
+                    code = "Unicode";
+                    break;
+                case 0xfeff:
+                    code = "UTF-16BE";
+                    break;
+                default:
+                    code = "GBK";
+            }
+            /*用于判断编码的代码结束*/
+            // 按照对应编码方式将字节流转化为字符流
             InputStreamReader isr;
             try {
-                isr = new InputStreamReader(fis,"UTF-8");
+                fis.close();
+                fis = new FileInputStream(file);
+                isr = new InputStreamReader(fis, code);
+                if(reader != null)
+                {
+                    reader.close();
+                }
                 reader = new BufferedReader(isr);
             } catch (UnsupportedEncodingException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, "字幕文件编码有问题，请仔细检查", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                return;
             }
 
         } catch (FileNotFoundException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "打开的文件不存在，请仔细检查", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        } catch (IOException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "字幕文件编码有问题，请仔细检查", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
         String tempString;
         Subline.clear();
@@ -322,7 +399,9 @@ public class Main extends javax.swing.JFrame {
                 //line++;
             }
         } catch (IOException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "字幕文件格式有问题，请仔细检查", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return;
         }
         parseASS();
     }
@@ -347,6 +426,8 @@ public class Main extends javax.swing.JFrame {
                         ststr = ststr.substring(1);
                     }//去除空格
                     Allstyle.add(ststr);
+                    ststr = tempstring.split(",", 3)[1];
+                    StyleFonts.add(ststr);
                 } else {
                     if (tempstring.contains("[Events]")) {
                         break;
@@ -381,7 +462,7 @@ public class Main extends javax.swing.JFrame {
                 }
                 Starttime.add(nowline[1]);
                 Endtime.add(nowline[2]);
-                Style.add(nowline[3]);
+                Style.add(nowline[3]);  
                 Content.add(nowline[9]);
             } else if (substart != -1)//已经开始却不是字幕
             {
@@ -413,7 +494,7 @@ public class Main extends javax.swing.JFrame {
         tcm.getColumn(1).setMaxWidth(70);
         tcm.getColumn(2).setPreferredWidth(70);
         tcm.getColumn(2).setWidth(70);
-        tcm.getColumn(2).setMaxWidth(120);
+        tcm.getColumn(2).setMaxWidth(300);
         jScrollPane1.setRowHeaderView(new RowHeaderTable(SubTable, 40));
     }
 
@@ -452,41 +533,37 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
-    
-    public static Vector getStarttime()
-    {
+    public static Vector getStarttime() {
         return Starttime;
     }
-    public static Vector getEndtime()
-    {
+
+    public static Vector getEndtime() {
         return Endtime;
     }
-    public static Vector getStyle()
-    {
+
+    public static Vector getStyle() {
         return Style;
     }
-    public static Vector getContent()
-    {
+
+    public static Vector getContent() {
         return Content;
     }
-    public static ArrayList getAllstyle()
-    {
+
+    public static ArrayList getAllstyle() {
         return Allstyle;
     }
 
-    public static void setSelectedRow(int row)
-    {
+    public static ArrayList getStyleFonts() {
+        return StyleFonts;
+    }
+    public static void setSelectedRow(int row) {
         row--;
-        Rectangle rect = SubTable.getCellRect(row,0,true);   
+        Rectangle rect = SubTable.getCellRect(row, 0, true);
         SubTable.scrollRectToVisible(rect);
         SubTable.setRowSelectionInterval(row, row);
         //jScrollPane1.getHorizontalScrollBar().setValue(row);
         //jScrollPane1.getHorizontalScrollBar().updateUI();
     }
-
-    
-    
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ExitMenu;
     private javax.swing.JMenuItem FileOpenMenu;
@@ -502,9 +579,15 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private static javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem showFonts;
+    private javax.swing.JButton showFontsButton;
     // End of variables declaration//GEN-END:variables
+    SingLanDialog sldlg = null;
+    MultiLanDialog mudlg = null;
+    ShowFontsDialog sfdlg = null;
     private javax.swing.JFileChooser dlg = null;
     private ArrayList Subline = new ArrayList();
+    private static ArrayList StyleFonts = new ArrayList();
     private static ArrayList Allstyle = new ArrayList();
     private static Vector Starttime = new Vector();
     private static Vector Endtime = new Vector();
@@ -513,7 +596,8 @@ public class Main extends javax.swing.JFrame {
     //private int stylestart = -1;
     private int substart = -1;//字幕主体开始的行数，便于定位
     private static File file = null;
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.S"); 
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.S");
+
     /**
      * 用于显示RowHeader的JTable，只需要将其加入JScrollPane的RowHeaderView即可为JTable生成行标题
      */
@@ -620,8 +704,5 @@ public class Main extends javax.swing.JFrame {
         public Object getValueAt(int row, int column) {
             return row;
         }
-       
     }
-    
-    
 }

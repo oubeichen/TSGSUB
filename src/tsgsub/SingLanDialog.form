@@ -3,6 +3,7 @@
 <Form version="1.8" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="&#x5355;&#x8bed;&#x67e5;&#x9519;"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -22,20 +23,20 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="isFindTimeCover" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="59" max="32767" attributes="0"/>
+                      <EmptySpace pref="44" max="32767" attributes="0"/>
                       <Component id="Find" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
                               <Component id="StyleComboBox" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
@@ -50,6 +51,8 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="isFindMultiLine" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
@@ -61,13 +64,16 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
+              <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="StyleComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" pref="159" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" pref="155" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="isFindWrongStyle" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -165,6 +171,16 @@
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="&#x67e5;&#x627e;&#x7ed3;&#x675f;&#x65e9;&#x4e8e;&#x7b49;&#x4e8e;&#x5f00;&#x59cb;"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x8bf7;&#x5728;AE&#x4e2d;&#x4fee;&#x6539;&#x540e;&#x91cd;&#x65b0;&#x6253;&#x5f00;&#xff0c;&#x591a;&#x6b21;&#x68c0;&#x67e5;&#x65e0;&#x9519;&#x8bef;&#x540e;&#x624d;&#x53ef;&#x786e;&#x4fdd;&#x3002;&#x8fd8;&#x5728;&#x4e0d;&#x65ad;&#x5b8c;&#x5584;&#xff0c;&#x8bf7;&#x89c1;&#x8c05;&#x3002;"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x53cc;&#x51fb;&#x4e0b;&#x9762;&#x7684;&#x9519;&#x8bef;&#x53ef;&#x5728;&#x4e3b;&#x7a97;&#x53e3;&#x5b9a;&#x4f4d;&#x5bf9;&#x5e94;&#x884c;&#x7684;&#x5b57;&#x5e55;&#x3002;"/>
       </Properties>
     </Component>
   </SubComponents>

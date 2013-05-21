@@ -3,12 +3,14 @@
  * and open the template in the editor.
  */
 package tsgsub;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+
 /**
  *
  * @author oubeichen
@@ -21,9 +23,11 @@ public class MultiLanDialog extends javax.swing.JDialog {
     public MultiLanDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        //this.setLocationRelativeTo(null); 
         Reslist.setModel(new DefaultListModel());
         init();
     }
+
     private void init() {
         int i;
         totalstyles = Main.getAllstyle().size();
@@ -40,6 +44,7 @@ public class MultiLanDialog extends javax.swing.JDialog {
         }
 
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -68,6 +73,7 @@ public class MultiLanDialog extends javax.swing.JDialog {
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("双语查错");
 
         FindLength.setText("30");
         FindLength.addActionListener(new java.awt.event.ActionListener() {
@@ -109,7 +115,7 @@ public class MultiLanDialog extends javax.swing.JDialog {
 
         jLabel2.setText("请选择日文样式的名称：");
 
-        jLabel3.setText("由于双语轴错误情况还是挺多的，所以免不了有缺漏或者多余");
+        jLabel3.setText("由于双语轴错误情况还是挺多的，所以免不了有缺漏或者多余。双击下面的错误可在主窗口定位对应行的字幕。");
 
         isFindMultiLanStylePro.setSelected(true);
         isFindMultiLanStylePro.setText("查找中日样式不符");
@@ -159,7 +165,7 @@ public class MultiLanDialog extends javax.swing.JDialog {
                                 .addComponent(isFindTimeCover)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(Find)))
-                        .addGap(0, 48, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -205,39 +211,42 @@ public class MultiLanDialog extends javax.swing.JDialog {
         // TODO add your handling code here:
         if (evt.getClickCount() == 2) {
             String temp = Reslist.getSelectedValue().toString();
-            int selectedrow = Integer.parseInt(temp.split(":",2)[0]);
+            int selectedrow = Integer.parseInt(temp.split(":", 2)[0]);
             Main.setSelectedRow(selectedrow);
         }
     }//GEN-LAST:event_ReslistMouseClicked
 
     private void FindActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FindActionPerformed
         // TODO add your handling code here:
-        
+
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.S");
         Date tstart;
         Date tend;
         Date lastend;
         Date laststart;
+        boolean havetofind = false;
         String zh = StyleComboBox.getSelectedItem().toString();
         String jp = StyleComboBox1.getSelectedItem().toString();
         int total = Main.getStarttime().size(), i;
         DefaultListModel dlm = (DefaultListModel) Reslist.getModel();
         dlm.setSize(0);
         for (i = 0; i < total; i++) {
-            String temp = Main.getContent().get(i).toString();
-            String style = Main.getStyle().get(i).toString();
-            boolean havetofind = false;
-            if (zh.equals(style) || jp.equals(style)) {
-                havetofind = true;
-            }
+            /*初始化一些数值开始*/
+            String temp = Main.getContent().get(i).toString();//当前行内容
+            String style = Main.getStyle().get(i).toString();//当前行样式
             try {
-                tstart = sdf.parse(Main.getStarttime().get(i).toString());
-                tend = sdf.parse(Main.getEndtime().get(i).toString());
+                tstart = sdf.parse(Main.getStarttime().get(i).toString());//当前行开始时间
+                tend = sdf.parse(Main.getEndtime().get(i).toString());//当前行结束时间
             } catch (ParseException ex) {
                 Logger.getLogger(SingLanDialog.class.getName()).log(Level.SEVERE, null, ex);
                 javax.swing.JOptionPane.showMessageDialog(this, "第" + i + "行字幕时间格式有误", "错误", javax.swing.JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if (zh.equals(style) || jp.equals(style)) {
+                havetofind = true;
+            }
+            /*初始化一些数值结束*/
+
             if (isFindLength.isSelected())//判断长度
             {
                 int findlen;
@@ -253,7 +262,7 @@ public class MultiLanDialog extends javax.swing.JDialog {
             }
             if (isFindMultiLine.isSelected())//判断多行
             {
-                if (temp.contains("\\n")) {
+                if (temp.contains("\\n") || temp.contains("\\N")) {
                     dlm.addElement((int) (i + 1) + ": 这一行字幕包含\"\\n\"，将会显示为多行");
                 }
             }
@@ -269,14 +278,20 @@ public class MultiLanDialog extends javax.swing.JDialog {
                     dlm.addElement((int) (i + 1) + ": 这一行字幕所使用的样式不在样式表里");
                 }
             }
-            if (isFindTimeCover.isSelected())//判断时间轴重叠
+            if (isFindOver.isSelected())//判断结束时间早于开始时间
             {
-                if (havetofind) {
+                if (tstart.compareTo(tend) >= 0) {
+                    dlm.addElement((int) (i + 1) + ": 这一行字幕时间轴结束时间早于等于开始时间");
+                }
+            }
+            if (havetofind) {//是双语样式
+                if (isFindTimeCover.isSelected())//判断时间轴重叠
+                {
                     int j = i - 1;
                     while (j >= 0 && !Main.getStyle().get(j).toString().equals(style)) {
                         j--;
                     }
-                    if (j >= 0)//找到上一个字幕
+                    if (j >= 0)//找到上一个同样式的字幕（理论上是往前两个）
                     {
                         try {
                             lastend = sdf.parse(Main.getEndtime().get(j).toString());
@@ -286,51 +301,40 @@ public class MultiLanDialog extends javax.swing.JDialog {
                             return;
                         }
                         if (lastend.compareTo(tstart) > 0) {
-                            dlm.addElement((int) (i + 1) + ": 这一行字幕和上一个"+ style +"样式字幕时间轴有重叠");
-                        }    
+                            dlm.addElement((int) (i + 1) + ": 这一行和紧接着的上一个" + style + "样式字幕时间轴有重叠");
+                        }
                     }
                 }
-            }
-            if (isFindOver.isSelected())//判断结束时间早于开始时间
-            {
-                if (tstart.compareTo(tend) >= 0) {
-                    dlm.addElement((int) (i + 1) + ": 这一行字幕时间轴结束时间早于等于开始时间");
+                int j = i + 1;//找下一行双语字幕（理论上样式应该不同）
+                while (j < total && !Main.getStyle().get(j).toString().equals(jp) && !Main.getStyle().get(j).toString().equals(zh)) {
+                    j++;
                 }
-            }
-            if(isFindMultiLanStylePro.isSelected())//判断双语轴的样式
-            {
-                if(havetofind)
+                if (j < total)//找到了下一行双语字幕
                 {
-                    int j = i + 1;
-                    while (j < total && !Main.getStyle().get(j).toString().equals(jp) && !Main.getStyle().get(j).toString().equals(zh)) {
-                        j++;
-                    }
-                    if(j < total)//找到下一行字幕
+                    if (isFindMultiLanStylePro.isSelected())//判断双语轴的样式
                     {
-                        if(Main.getStyle().get(j).toString().equals(style))//后面样式和这个样式一样
+                        if (Main.getStyle().get(j).toString().equals(style))//后面样式和这个样式一样
                         {
                             dlm.addElement((int) (i + 1) + ": 这一行字幕的双语样式同后面紧接着的一行双语样式是相同的");
                         }
-                        if (isFindMultiLanTimePro.isSelected() && jp.equals(style))//日文则判断是否和后面的中文时间一致
-                        {
-                            try {
-                                lastend = sdf.parse(Main.getEndtime().get(j).toString());
-                                laststart = sdf.parse(Main.getStarttime().get(j).toString());
-                            } catch (ParseException ex) {
-                                Logger.getLogger(MultiLanDialog.class.getName()).log(Level.SEVERE, null, ex);
-                                javax.swing.JOptionPane.showMessageDialog(this, "文件第" + j + "行字幕时间格式有误", "错误", javax.swing.JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                            if(!tstart.equals(laststart) || !tend.equals(lastend))
-                            {
-                                dlm.addElement((int) (i + 1) + ": 这一行日语的时间轴和后面同一句话中文的时间轴不一样");
-                            }
+                    }
+                    if (isFindMultiLanTimePro.isSelected() && jp.equals(style))//日文则判断是否和后面的中文时间一致
+                    {
+                        try {
+                            lastend = sdf.parse(Main.getEndtime().get(j).toString());
+                            laststart = sdf.parse(Main.getStarttime().get(j).toString());
+                        } catch (ParseException ex) {
+                            Logger.getLogger(MultiLanDialog.class.getName()).log(Level.SEVERE, null, ex);
+                            javax.swing.JOptionPane.showMessageDialog(this, "文件第" + j + "行字幕时间格式有误", "错误", javax.swing.JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if (!tstart.equals(laststart) || !tend.equals(lastend)) {
+                            dlm.addElement((int) (i + 1) + ": 这一行日语的时间轴和后面同一句话中文的时间轴不一样");
                         }
                     }
                 }
             }
         }
-
     }//GEN-LAST:event_FindActionPerformed
 
     /**
