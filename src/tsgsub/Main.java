@@ -124,7 +124,7 @@ public class Main extends javax.swing.JFrame {
         showFonts = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("三角字幕处理工具0.2");
+        setTitle("三角字幕查错工具0.21");
 
         SubTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -398,15 +398,16 @@ public class Main extends javax.swing.JFrame {
                 Subline.add(tempString);
                 //line++;
             }
+            reader.close();
         } catch (IOException ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "字幕文件格式有问题，请仔细检查", "文件错误", javax.swing.JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
-        parseASS();
+        parseASS(file.getName());
     }
 
-    private void parseASS() {
+    private void parseASS(String filename) {
         Allstyle.clear();
         Starttime.clear();
         Endtime.clear();
@@ -479,6 +480,7 @@ public class Main extends javax.swing.JFrame {
         totallines++;
         //int events = Starttime.size();
         putintable();
+        this.setTitle(filename);
     }
 
     private void putintable() {
