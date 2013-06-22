@@ -124,7 +124,7 @@ public class Main extends javax.swing.JFrame {
         showFonts = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("三角字幕查错工具0.21");
+        setTitle("三角字幕查错工具0.22");
 
         SubTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

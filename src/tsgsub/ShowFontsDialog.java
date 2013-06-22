@@ -4,6 +4,13 @@
  */
 package tsgsub;
 
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,6 +29,8 @@ public class ShowFontsDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         //this.setLocationRelativeTo(null); 
+        Reslist.add(jPopupMenu1);
+        Reslist.addMouseListener(new myJListListener());
         checkfonts();
     }
 
@@ -34,10 +43,21 @@ public class ShowFontsDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jScrollPane1 = new javax.swing.JScrollPane();
         Reslist = new javax.swing.JList();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+
+        jMenuItem1.setText("复制选中字体名称");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItem1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("查看字体");
@@ -46,7 +66,14 @@ public class ShowFontsDialog extends javax.swing.JDialog {
 
         jLabel1.setText("理论上将样式和\\fn特效中的字体都包括了进来，但还是不推荐特效因此省事");
 
-        jLabel2.setText("不过有可能判断失误出现多余的奇怪字体，无视即可");
+        jLabel2.setText("Windows下提示未安装的字体需要安装，其他操作系统未经过测试，请注意");
+
+        jButton1.setText("复制选中字体名称");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -60,7 +87,10 @@ public class ShowFontsDialog extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -70,13 +100,41 @@ public class ShowFontsDialog extends javax.swing.JDialog {
                 .addGap(5, 5, 5)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        if(Reslist.getSelectedIndex() >= 0)
+        {
+            StringSelection stsel = new StringSelection(Reslist.getSelectedValue().toString().split("（")[0]);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stsel, stsel);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        jButton1ActionPerformed(evt);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    public class myJListListener extends MouseAdapter {
+        //e.getButton() 返回值有 1，2，3。1代表鼠标左键，3代表鼠标右键
+        //jList.getSelected() 返回的是选中的JList中的项数。
+        //if语句的意思也就是，在JList 中点击了右键而且JList选中了某项，显示右键菜单
+        //e.getX() , e.getY() 返回的是鼠标目前的位置！也就是在目前鼠标的位置上弹出右键
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            Reslist.setSelectedIndex(Reslist.locationToIndex(e.getPoint())); 
+            if(e.getButton() == 3 && Reslist.getSelectedIndex() >= 0) {
+                jPopupMenu1.show(Reslist, e.getX(), e.getY());
+            }
+        }
+    }
     private void checkfonts() {
         Reslist.setModel(new DefaultListModel());
         DefaultListModel dlm = (DefaultListModel) Reslist.getModel();
@@ -109,10 +167,21 @@ public class ShowFontsDialog extends javax.swing.JDialog {
                 hm.put(substr, null);
             }
         }
+        String[] fontlist = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        ArrayList<String> Fontlist = new ArrayList<String>(Arrays.asList(fontlist));//系统已安装字体
         it = hm.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            dlm.addElement(entry.getKey().toString());
+            String fontname = entry.getKey().toString();
+            if(!Fontlist.contains(fontname))
+            {
+                fontname = fontname.concat("（未安装）");
+            }
+            else
+            {
+                fontname = fontname.concat("（已安装）");
+            }
+            dlm.addElement(fontname);
         }
     }
 
@@ -145,6 +214,7 @@ public class ShowFontsDialog extends javax.swing.JDialog {
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 ShowFontsDialog dialog = new ShowFontsDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -159,8 +229,11 @@ public class ShowFontsDialog extends javax.swing.JDialog {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList Reslist;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
