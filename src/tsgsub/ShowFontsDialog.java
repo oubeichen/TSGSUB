@@ -179,7 +179,7 @@ public class ShowFontsDialog extends javax.swing.JDialog {
             }
             else
             {
-                fontname = fontname.concat("（已安装）");
+                fontname = fontname.concat("（已装）");
             }
             dlm.addElement(fontname);
         }

@@ -413,6 +413,7 @@ public class Main extends javax.swing.JFrame {
         Endtime.clear();
         Style.clear();
         Content.clear();
+        StyleFonts.clear();
         int totallines = Subline.size(), i;
         String tempstring, ststr;
         boolean v4style = false;//判断是否在[V4+ Styles]片段内
